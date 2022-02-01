@@ -1,7 +1,8 @@
 import networkx as nx
 import numpy as np
+import matplotlib.pyplot as plt
 
-class InorientedGraph():
+class NotOrientedGraph():
 
     """
     Данный класс создает неориентированный граф.
@@ -11,7 +12,7 @@ class InorientedGraph():
     если он равен 'no' - неполный граф.
     Lower & Upper Bounds - границы (нижняя и верхняя соотв.)
     интервала значений для матрицы смежности (веса ребер графа!)
-    (все, что выходит за его границы - отсекается).
+    (все ребра, веса которых выходят за его границы - отсекаются).
     Далее матрица смежности используется для построения
     неориентированного графа заданной полноты (атрибут "complete").
     В случае графа с одинаковыми весами ребер (аттрибут <weighted> == 'no')
@@ -87,7 +88,7 @@ class InorientedGraph():
                 self.__lower_bound = lower_bound
             elif lower_bound >= upper_bound:
                 print('Нижняя должна быть СТРОГО меньше верхней границы интервала!!!')
-                print('Фактически поданы: ')
+                print('Интервал развесовки ребер графа: ')
                 print(f'Нижняя граница: {lower_bound}')
                 print(f'Верхняя граница: {upper_bound}')
             else:
@@ -106,7 +107,7 @@ class InorientedGraph():
                 self.__upper_bound = upper_bound
             elif lower_bound >= upper_bound:
                 print('Нижняя должна быть СТРОГО меньше верхней границы интервала!!!')
-                print('Фактически поданы: ')
+                print('Интервал развесовки ребер графа: ')
                 print(f'Нижняя граница: {lower_bound}')
                 print(f'Верхняя граница: {upper_bound}')
             else:
@@ -130,25 +131,49 @@ class InorientedGraph():
 
 
     def wrong_format(self, variable_name, variable_value):
+        """
+        Срабатывает в том случае,
+        когда аттрибуту пытаются с помощью метода-сеттера
+        пытаются присвоить невалидное значение
+        :param variable_name: наименование аттрибута
+        :param variable_value: переданное для присвоения значение аттрибута
+        :return:
+        """
         print(f'Неверный формат.'
               f'В качестве <{variable_name}> подано: <{variable_value}>; '
               f'формата: <{type(variable_value)}>')
 
 
     def build_graph(self):
+        """
+        данный метод
+        :return: граф с заданными ранее параметрами
+        """
         N = self.get_N() # Количество вершин
         complete = self.get_complete() # граф - полносвязный?
         lower_bound = self.get_lower_bound() # нижняя граница весов ребер
         upper_bound = self.get_upper_bound() # верхняя граница весов ребер
-        weighted = self.get_weighted() # граф - со взвешенными ребрами?
+        weighted = self.get_weighted() # граф - со взвешенными ребрами
         # Генерация матрицы смежности
         A = np.triu(np.random.exponential(0.1, [N, N]), 1)
-        if complete == 'no':
-            A[A<lower_bound]=0 #Убрать часть ребер, иначе граф получится полносвязным
+        if complete == 'no': # Убрать часть ребер, иначе граф получится полносвязным
+            A[A<lower_bound]=0
             A[A>upper_bound] = 0
-        else:
+        else: # полносвязный граф
             pass
         if weighted == 'no':
-            A[A>0]=1 #делаем невзвешенный граф
+            A[A>0]=1 # граф со невзвешенными ребрами
         G = nx.from_numpy_matrix(A)
         return G
+
+    def draw_graph(self):
+        """
+        Данный метод рисует граф
+        :param G: граф из метода build_graph
+        :return: нарисованный граф с заданными ранее параметрами
+        """
+        graph = self.build_graph()
+        plt.figure(figsize=(8, 8))
+        nx.draw(graph)
+        return graph
+
