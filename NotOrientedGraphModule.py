@@ -174,6 +174,6 @@ class NotOrientedGraph():
         """
         graph = self.build_graph()
         plt.figure(figsize=(8, 8))
-        nx.draw(graph)
+        nx.draw(graph, with_labels=True, font_size=10)
         return graph
 
