@@ -1,4 +1,4 @@
-import pandas as pd
+from pandas import Series as pd_Series
 
 class CliqueFinder():
 
@@ -85,17 +85,17 @@ class CliqueFinder():
             clique_lst = self.default_clique_algorithm(graph)
 
         if vertex_num_equals == 'yes': # количество вершин в кликах СТРОГО ограничено одним значением
-            result = [i for i in sorted(clique_lst, key=len)[::-1] if len(i) == clique_vertex_num]
+            cliques_intersected = [i for i in sorted(clique_lst, key=len)[::-1] if len(i) == clique_vertex_num]
 
         elif vertex_num_equals == 'no': # кол-во вершин в кликах от (включительно) и более заданного значения
-            result = [i for i in sorted(clique_lst, key=len)[::-1] if len(i) >= clique_vertex_num]
+            cliques_intersected = [i for i in sorted(clique_lst, key=len)[::-1] if len(i) >= clique_vertex_num]
 
         # удаляем задубленные вершины в кликах
 
         vertex_set = set()
-        result_refined = []
+        cliques_not_intersected = []
 
-        for lst in result:
+        for lst in cliques_intersected:
             flag = True
             for elem in lst:
                 if elem not in vertex_set:
@@ -103,11 +103,11 @@ class CliqueFinder():
                 else:
                     flag = False
             if flag:
-                result_refined.append(lst)
+                cliques_not_intersected.append(lst)
 
-        self.show_cliques_info(result_refined, orig_graph_vertexes_num)
+        self.show_cliques_info(cliques_not_intersected, orig_graph_vertexes_num)
 
-        return result_refined
+        return cliques_not_intersected
 
 
     def show_cliques_info(self, found_cliques_lst, vertexes_num):
@@ -119,7 +119,7 @@ class CliqueFinder():
             for vertex in clique:
                 found_vertexes_lst_extended.append(vertex)
 
-        found_cliques_vertexes_unique = pd.Series(found_vertexes_lst_extended).nunique()
+        found_cliques_vertexes_unique = pd_Series(found_vertexes_lst_extended).nunique()
 
         print(f'В исходном графе с общим количеством вершин, равном <{vertexes_num}> (шт.)\n')
 

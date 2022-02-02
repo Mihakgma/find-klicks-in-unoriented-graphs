@@ -157,7 +157,7 @@ class NotOrientedGraph():
         # Генерация матрицы смежности
         A = np.triu(np.random.exponential(0.1, [N, N]), 1)
         if complete == 'no': # Убрать часть ребер, иначе граф получится полносвязным
-            A[A<lower_bound]=0
+            A[A<lower_bound] = 0
             A[A>upper_bound] = 0
         else: # полносвязный граф
             pass
